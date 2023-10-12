@@ -1,15 +1,18 @@
 {
   "name": "email-svc",
+  "type": "module",
   "version": "0.0.0",
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "start": "wrangler dev"
+    "gen-key": "node scripts/gen-key.js",
+    "update-key": "wrangler secret put API_KEY",
+    "reset-key": "node scripts/reset-key.js"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230419.0",
-    "typescript": "^5.0.4",
-    "wrangler": "^3.0.0"
+    "@cloudflare/workers-types": "^4.20231010.0",
+    "typescript": "^5.2.2",
+    "wrangler": "^3.12.0"
   }
 }

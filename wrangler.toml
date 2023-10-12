@@ -2,10 +2,15 @@ name = "email-svc"
 main = "src/index.ts"
 compatibility_date = "2023-10-10"
 
+workers_dev = false
+routes = [
+  { pattern = "email-svc.phn.dev", custom_domain = true }
+]
+
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
-# [vars]
+[vars]
 # MY_VARIABLE = "production_value"
 
 # Bind a KV Namespace. Use KV as persistent storage for small key-value pairs.
