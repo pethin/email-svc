@@ -8,7 +8,9 @@
     "dev": "wrangler dev",
     "gen-key": "node scripts/gen-key.js",
     "update-key": "wrangler secret put API_KEY",
-    "reset-key": "node scripts/reset-key.js"
+    "reset-key": "node scripts/reset-key.js",
+    "update-dkim-secret": "wrangler secret put DKIM_PRIVATE_KEY",
+    "reset-dkim": "node script/reset-dkim.js"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20231010.0",

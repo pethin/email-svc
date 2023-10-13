@@ -8,7 +8,7 @@ if (genKey.status !== 0) {
 
 const key = (genKey.output[1].trim());
 
-const wrangler = spawn('npm', ['run', '--silent', 'update-key']);
+const wrangler = spawn('npm', ['exec', 'wrangler', 'secret', 'put', 'API_KEY']);
 wrangler.stdout.pipe(process.stdout);
 wrangler.stderr.pipe(process.stderr);
 
@@ -17,8 +17,8 @@ wrangler.stdin.end();
 
 await new Promise((resolve) => {
 	wrangler.on('close', (code) => {
-		resolve()
-	})
+		resolve();
+	});
 });
 
 console.log(`\nAPI_KEY: ${key}`);

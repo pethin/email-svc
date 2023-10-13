@@ -11,7 +11,8 @@ routes = [
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
-# MY_VARIABLE = "production_value"
+DKIM_DOMAIN = "phn.dev"
+DKIM_SELECTOR = "mailchannels"
 
 # Bind a KV Namespace. Use KV as persistent storage for small key-value pairs.
 # Docs: https://developers.cloudflare.com/workers/runtime-apis/kv
