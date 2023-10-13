@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
+  "author": "Peter Nguyen <peter@phn.sh>",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
