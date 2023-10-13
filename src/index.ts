@@ -85,9 +85,9 @@ export default {
 		const payload = await request.json() as unknown as any;
 		if (payload['personalizations'] != null) {
 			for (const personalization of payload['personalizations']) {
-				personalization['dkim_domain'] = env.DKIM_DOMAIN;
-				personalization['dkim_selector'] = env.DKIM_SELECTOR;
-				personalization['dkim_private_key'] = env.DKIM_PRIVATE_KEY;
+				personalization['dkim_domain'] ??= env.DKIM_DOMAIN;
+				personalization['dkim_selector'] ??= env.DKIM_SELECTOR;
+				personalization['dkim_private_key'] ??= env.DKIM_PRIVATE_KEY;
 			}
 		}
 
