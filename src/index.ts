@@ -56,14 +56,24 @@ export default {
 		}
 
 		if (request.method !== 'POST') {
-			return new Response('not found', {
+			return new Response(JSON.stringify({
+				'errors': [
+					'not found'
+				]
+			}), {
 				status: 404
 			});
 		}
 
 		const apiKey = request.headers.get('X-API-Key');
 		if (apiKey == null) {
-			return new Response('missing X-API-Key header', { status: 401 });
+			return new Response(JSON.stringify({
+				'errors': [
+					'Missing X-API-Key header'
+				]
+			}), {
+				status: 401
+			});
 		}
 
 		const actual = encoder.encode(apiKey);
@@ -76,7 +86,13 @@ export default {
 		}
 
 		if (!equal) {
-			return new Response('Invalid X-API-Key', { status: 401 });
+			return new Response(JSON.stringify({
+				'errors': [
+					'Invalid X-API-Key'
+				]
+			}), {
+				status: 401
+			});
 		}
 
 		const sourceUrl = new URL(request.url);
@@ -99,6 +115,15 @@ export default {
 			'body': JSON.stringify(payload)
 		});
 
-		return await fetch(sendEmailRequest);
+		const response = await fetch(sendEmailRequest);
+		if (response.status === 202) {
+			return new Response(JSON.stringify({
+				data: null
+			}), {
+				status: 202
+			});
+		}
+
+		return response;
 	}
 };
