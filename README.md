@@ -3,7 +3,7 @@ Cloudflare Email Service
 
 This service provides a worker that sends emails via Cloudflare's integration
 with MailChannels. This allows your other workers (local and deployed) or
-external services to send emails.
+external services to send emails via HTTP.
 
 Getting Started
 ---------------
