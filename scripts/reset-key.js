@@ -1,24 +1,15 @@
-import { spawn, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
+import { genKey } from './gen-key.js';
+const key = genKey()
 
-const genKey = spawnSync('npm', ['run', '--silent', 'gen-key'], { encoding: 'utf-8' });
-if (genKey.status !== 0) {
-	console.error(`Error generating key. ${genKey.output[2]}`);
-	process.exit(genKey.status);
+const wrangler = spawnSync('npm', ['exec', '--', 'wrangler', 'secret', 'put', 'API_KEY'], {
+	input: key,
+	encoding: 'utf-8'
+});
+if (wrangler.status !== 0) {
+	console.error(`Error setting private key secret.\n${wrangler.output[2]}`);
+	process.exit(wrangler.status);
 }
 
-const key = (genKey.output[1].trim());
-
-const wrangler = spawn('npm', ['exec', 'wrangler', 'secret', 'put', 'API_KEY']);
-wrangler.stdout.pipe(process.stdout);
-wrangler.stderr.pipe(process.stderr);
-
-wrangler.stdin.write(key);
-wrangler.stdin.end();
-
-await new Promise((resolve) => {
-	wrangler.on('close', (code) => {
-		resolve();
-	});
-});
-
-console.log(`\nAPI_KEY: ${key}`);
+console.log('Worker API_KEY has been updated.\n')
+console.log(`X-API-Key: ${key}`);

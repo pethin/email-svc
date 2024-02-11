@@ -1,4 +1,5 @@
 import { webcrypto } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
 const chars = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
@@ -18,11 +19,13 @@ function toBase(input, base = 94) {
 	return outData.join('');
 }
 
-export function genKey(bytes = 128) {
+export function genKey(bytes = 256) {
 	const keyBytes = new Uint8Array(bytes);
 	webcrypto.getRandomValues(keyBytes);
 
 	return toBase(keyBytes);
 }
 
-console.log(genKey());
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
+	console.log(`X-API-Key: ${genKey()}`);
+}

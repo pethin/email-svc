@@ -1,59 +1,41 @@
-import { spawn, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
+import { generateKeyPairSync } from 'node:crypto';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
+import toml from 'toml'
 
-const genrsa = spawnSync('openssl', ['genrsa', '2048']);
-if (genrsa.status !== 0) {
-	console.error(`Error generating private key. ${genrsa.output[2].toString()}`);
-	process.exit(genrsa.status);
-}
-
-const rsapem = (genrsa.output[1].toString());
-
-const privder = spawnSync('openssl', ['rsa', '-outform', 'der'], {
-	input: rsapem
+const { publicKey, privateKey } = generateKeyPairSync('rsa', {
+	modulusLength: 2048,
+	publicKeyEncoding: {
+		type: 'spki',
+		format: 'der',
+	},
+	privateKeyEncoding: {
+		type: 'pkcs8',
+		format: 'der',
+	},
 });
-if (privder.status !== 0) {
-	console.error(`Error generating private key. ${privder.output[2].toString()}`);
-	process.exit(privder.status);
-}
 
-const privkeybase64 = spawnSync('openssl', ['base64', '-A'], {
-	input: privder.output[1],
-	encoding: 'utf-8'
-});
-if (privkeybase64.status !== 0) {
-	console.error(`Error generating private key. ${privkeybase64.output[2]}`);
-	process.exit(privkeybase64.status);
-}
+const dkimPublicKey = publicKey.toString('base64');
+const dkimPrivateKey = privateKey.toString('base64');
 
-const dkimPrivateKey = privkeybase64.output[1];
+const wranglerTomlPath = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'wrangler.toml');
+const wranglerToml = toml.parse(readFileSync(wranglerTomlPath, { encoding: 'utf-8' }));
 
-const pubder = spawnSync('openssl', ['rsa', '-pubout', '-outform', 'der'], {
-	input: rsapem
-});
-if (pubder.status !== 0) {
-	console.error(`Error generating public key. ${pubder.output[2].toString()}`);
-	process.exit(pubder.status);
-}
+const dkimDomain = wranglerToml['vars']['DKIM_DOMAIN']
+const dkimSelector = wranglerToml['vars']['DKIM_SELECTOR']
 
-const pubkeybase64 = spawnSync('openssl', ['base64', '-A'], {
-	input: pubder.output[1],
-	encoding: 'utf-8'
-});
-if (pubkeybase64.status !== 0) {
-	console.error(`Error generating public key. ${pubkeybase64.output[2]}`);
-	process.exit(pubkeybase64.status);
-}
-
-const dkimPublicKey = pubkeybase64.output[1];
-
-const wrangler = spawnSync('npm', ['exec', 'wrangler', 'secret', 'put', 'DKIM_PRIVATE_KEY'], {
+const wrangler = spawnSync('npm', ['exec', '--', 'wrangler', 'secret', 'put', 'DKIM_PRIVATE_KEY'], {
 	input: dkimPrivateKey,
 	encoding: 'utf-8'
 });
 if (wrangler.status !== 0) {
-	console.error(`Error setting private key secret. ${wrangler.output[2]}`);
+	console.error(`Error setting private key secret.\n${wrangler.output[2]}`);
 	process.exit(wrangler.status);
 }
 
-console.log(`\nDKIM_PRIVATE_KEY: ${dkimPrivateKey}`);
-console.log(`\nDKIM_SELECTOR._domainkey IN TXT "v=DKIM1; k=rsa; p=${dkimPublicKey}"`);
+console.log(`Worker DKIM_PRIVATE_KEY has been updated.`)
+console.log(`Add this DNS record to '${dkimDomain}':\n`)
+
+console.log(`${dkimSelector}._domainkey IN TXT "v=DKIM1; k=rsa; p=${dkimPublicKey}"`);
