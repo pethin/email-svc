@@ -51,6 +51,7 @@ Example Request
 POST /?dry-run=false
 Host: mailchannels.example.com
 Content-Type: application/json
+X-API-Key: YOURGENERATEDKEY
 
 {
   "from": {
