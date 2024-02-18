@@ -17,12 +17,19 @@ Getting Started
 2. Update the custom domain route in `wrangler.toml` to the domain you wish
 to use for the email service.
 3. Update the `DKIM_DOMAIN` and `DKIM_SELECTOR` vars in `wrangler.toml`
+   - `DKIM_DOMAIN` is the outgoing email domain
+   - `DKIM_SELECTOR` will be the prefix to your `_domainkey` TXT record
+   - The TXT DKIM DNS record will be at `[DKIM_SELECTOR]._domainkey.[DKIM_DOMAIN].`
 4. Run `npm run deploy` to deploy the worker
 5. Run `npm run reset-dkim` and create or update your DKIM TXT DNS record
 6. Run `npm run reset-key` and save the `X-API-Key`
 7. Create or update an existing SPF TXT record to contain `include:relay.mailchannels.net`.
-For example `v=spf1 include:relay.mailchannels.net include:_spf.mx.cloudflare.net ~all`.
-Having multiple TXT SPF records is invalid.
+   - For example `@ IN TXT "v=spf1 include:relay.mailchannels.net include:_spf.mx.cloudflare.net ~all"`.
+   - Having multiple TXT SPF records is invalid. You must combine an existing SPF record using multiple `include:`.
+8. Create a `_mailchannels` TXT [DomainLockdown Record](https://support.mailchannels.com/hc/en-us/articles/16918954360845-Secure-your-domain-name-against-spoofing-with-Domain-Lockdown)
+   - **NOTE**: the `cfid` is the domain that your worker is running under. It can be different than the DKIM and SPF domain, which is the domain of outgoing emails.
+   - For example `_mailchannels.@ IN TXT "v=mc1 cfid=[YOUR_WORKERS_DEV_DOMAIN].workers.dev cfid=[YOUR_CUSTOM_DOMAIN]"`
+   - The `cfid` does not include the subdomain of the worker.
 
 Using the Service
 -----------------
