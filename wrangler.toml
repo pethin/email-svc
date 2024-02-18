@@ -2,9 +2,9 @@ name = "email-svc"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-workers_dev = false
+workers_dev = true
 routes = [
-  { pattern = "email-svc.phn.dev", custom_domain = true }
+  # { pattern = "email-svc.example.com", custom_domain = true }
 ]
 
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)

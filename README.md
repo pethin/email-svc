@@ -14,8 +14,9 @@ Requirements
 Getting Started
 ---------------
 1. Run `npm install`
-2. Update the custom domain route in `wrangler.toml` to the domain you wish
+2. (Optional) Add a custom domain route in `wrangler.toml` to the a domain you wish
 to use for the email service.
+   - This domain is for the worker service and can be different than your outgoing email address domain.
 3. Update the `DKIM_DOMAIN` and `DKIM_SELECTOR` vars in `wrangler.toml`
    - `DKIM_DOMAIN` is the outgoing email domain
    - `DKIM_SELECTOR` will be the prefix to your `_domainkey` TXT record
@@ -24,28 +25,20 @@ to use for the email service.
 5. Run `npm run reset-dkim` and create or update your DKIM TXT DNS record
 6. Run `npm run reset-key` and save the `X-API-Key`
 7. Create or update an existing SPF TXT record to contain `include:relay.mailchannels.net`.
-   - For example `@ IN TXT "v=spf1 include:relay.mailchannels.net include:_spf.mx.cloudflare.net ~all"`.
+   - For example `[DKIM_DOMAIN]. 1 IN TXT "v=spf1 include:relay.mailchannels.net include:_spf.mx.cloudflare.net ~all"`.
    - Having multiple TXT SPF records is invalid. You must combine an existing SPF record using multiple `include:`.
 8. Create a `_mailchannels` TXT [DomainLockdown Record](https://support.mailchannels.com/hc/en-us/articles/16918954360845-Secure-your-domain-name-against-spoofing-with-Domain-Lockdown)
    - **NOTE**: the `cfid` is the domain that your worker is running under. It can be different than the DKIM and SPF domain, which is the domain of outgoing emails.
-   - For example `_mailchannels.@ IN TXT "v=mc1 cfid=[YOUR_WORKERS_DEV_DOMAIN].workers.dev cfid=[YOUR_CUSTOM_DOMAIN]"`
+   - For example `_mailchannels.[DKIM_DOMAIN]. 1 IN TXT "v=mc1 cfid=[YOUR_WORKERS_DEV_DOMAIN].workers.dev"`
    - The `cfid` does not include the subdomain of the worker.
 
 Using the Service
 -----------------
-You can use the service by adding a service binding to your client worker
-and remove the custom domain route. This will be the most secure method,
-since the service will only be accessible from the bound workers.
-
-However, using bindings will not work when developing other workers locally.
-Therefore, it's recommend using a custom domain route which allows for local
-development of other workers.
-
 When submitting requests, you can add the query parameter `/?dry-run=true`.
 This will test the API and can be used for testing without sending emails.
 
-`workers.dev` domains can be used, however, DKIM and SPF will not be available,
-and your emails are likely to be flagged as spam.
+`workers.dev` domains can be used to host your worker. However, you can not use that domain for your outgoing email
+address since DKIM and SPF will not be available.
 
 You can call the email service with a `POST` using the same body content as the
 [MailChannels Transactional API](https://api.mailchannels.net/tx/v1/documentation)

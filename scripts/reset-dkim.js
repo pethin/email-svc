@@ -40,4 +40,4 @@ if (wrangler.status !== 0) {
 console.log(`Worker DKIM_PRIVATE_KEY has been updated.`);
 console.log(`Add this DNS record to '${dkimDomain}':\n`);
 
-console.log(`${dkimSelector}._domainkey.@ IN TXT "v=DKIM1; k=rsa; p=${dkimPublicKey}"`);
+console.log(`${dkimSelector}._domainkey.${dkimDomain} 1 IN TXT "v=DKIM1; k=rsa; p=${dkimPublicKey}"`);
