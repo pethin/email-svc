@@ -9,7 +9,6 @@ Requirements
 ------------
 * Cloudflare account
 * Wrangler CLI authenticated
-* OpenSSL
 
 Getting Started
 ---------------
