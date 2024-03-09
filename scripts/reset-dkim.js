@@ -3,6 +3,7 @@ import { webcrypto } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import toml from 'toml';
 
 const { publicKey, privateKey } = await webcrypto.subtle.generateKey(
@@ -28,13 +29,15 @@ const wranglerToml = toml.parse(readFileSync(wranglerTomlPath, { encoding: 'utf-
 const dkimDomain = wranglerToml['vars']['DKIM_DOMAIN'];
 const dkimSelector = wranglerToml['vars']['DKIM_SELECTOR'];
 
-const wrangler = spawnSync('npm', ['exec', '--', 'wrangler', 'secret', 'put', 'DKIM_PRIVATE_KEY'], {
+const require = createRequire(import.meta.url)
+const wrangler = require.resolve('wrangler/bin/wrangler.js')
+const wranglerResult = spawnSync(process.argv[0], [wrangler, 'secret', 'put', 'DKIM_PRIVATE_KEY'], {
 	input: dkimPrivateKey,
 	encoding: 'utf-8'
 });
-if (wrangler.status !== 0) {
-	console.error(`Error setting private key secret.\n${wrangler.output[2]}`);
-	process.exit(wrangler.status);
+if (wranglerResult.status !== 0) {
+	console.error(`Error setting private key secret.\n${wranglerResult.output[2]}`);
+	process.exit(wranglerResult.status);
 }
 
 console.log(`Worker DKIM_PRIVATE_KEY has been updated.`);
