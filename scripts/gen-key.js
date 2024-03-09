@@ -1,9 +1,9 @@
 import { webcrypto } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
-const chars = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
+const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
 
-function toBase(input, base = 94) {
+function toBase(input, base = chars.length) {
 	const outData = [];
 
 	const inData = BigInt(input.join(''));
