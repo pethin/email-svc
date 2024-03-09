@@ -80,7 +80,7 @@ X-API-Key: YOURGENERATEDKEY
           "email": "ccrecipient@example.com",
           "name": "Test CC Recipient"
         }
-      ],
+      ]
     }
   ],
   "subject": "Example Email",
