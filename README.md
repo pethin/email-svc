@@ -54,8 +54,8 @@ X-API-Key: YOURGENERATEDKEY
 
 {
   "from": {
-    "email": "test@example.com”,
-    "name": “Test Sender”
+    "email": "test@example.com",
+    "name": "Test Sender"
   },
   "replyTo": {
     "email": "support@example.com",
